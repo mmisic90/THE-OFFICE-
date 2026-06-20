@@ -1,5 +1,5 @@
 // The Office — Service Worker (PWA instalacija + offline)
-const CACHE = 'the-office-v3';
+const CACHE = 'the-office-v4';
 const FILES = [
   './index.html',
   './manifest.json',

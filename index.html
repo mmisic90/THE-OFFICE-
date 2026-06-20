@@ -149,6 +149,10 @@
   .b-poziv{background:var(--orange-50); color:var(--orange)}
   .b-admin{background:#eceff1; color:#546e7a}
   .b-other{background:#f5f5f5; color:#616161}
+  .b-rociste{background:#f3e5f5; color:#6a1b9a}
+  .task.kind-rociste{background:#faf5fd}
+  .t-hear{margin-top:8px; font-size:12.5px; font-weight:600; color:#6a1b9a; background:#f7edfb;
+    border-radius:8px; padding:7px 10px; border:1px solid #e6d3ef; display:flex; flex-wrap:wrap; gap:4px 10px}
 
   .t-meta{display:flex; align-items:center; gap:12px; flex-wrap:wrap; font-size:12px; color:var(--muted)}
   .t-rok{display:inline-flex; align-items:center; gap:5px; font-weight:700}
@@ -257,6 +261,7 @@
   .cal-item .ci-type{font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   .cal-item .ci-sub{font-size:11px; color:var(--muted)}
   .cal-item .ci-num{font-size:11px; font-weight:700; color:var(--indigo)}
+  .ci-rociste{background:#8e24aa}
   @media(min-width:760px){
     .cal-grid{grid-template-columns:repeat(7,1fr); gap:6px}
     .cal-day-h{flex-direction:column; align-items:flex-start; gap:2px; min-height:48px}
@@ -312,6 +317,7 @@
         <button class="on" data-view="moji">Moji</button>
         <button data-view="svi">Svi</button>
         <button data-view="kalendar">📅 7 dana</button>
+        <button data-view="rocista">⚖️ Ročišta</button>
         <button data-view="osobe">Po osobi</button>
         <button data-view="odob">⏳ Odobrenje <span id="pendBadge" class="pend-badge" style="display:none">0</span></button>
       </div>
@@ -339,18 +345,31 @@
       <button class="x" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
+      <div class="seg" id="kindSeg" style="margin-bottom:14px">
+        <button type="button" class="on" data-kind="rok" onclick="setKind('rok')">📄 Rok / zadatak</button>
+        <button type="button" data-kind="rociste" onclick="setKind('rociste')">⚖️ Ročište</button>
+      </div>
       <div class="field">
         <label>Broj predmeta <span class="hint">ukucaj ili izaberi iz uvezenih</span></label>
         <input id="fNum" list="predmetiList" placeholder="npr. Kž 3-3/26" autocomplete="off">
         <datalist id="predmetiList"></datalist>
       </div>
       <div class="field">
-        <label>Tip zadatka</label>
+        <label id="typeLbl">Tip zadatka</label>
         <select id="fType" onchange="toggleOther()"></select>
       </div>
       <div class="field" id="otherWrap" style="display:none">
         <label>Opiši zadatak <span class="hint">pošto je "Ostalo"</span></label>
         <input id="fOther" placeholder="npr. Sastaviti opomenu pred utuženje">
+      </div>
+      <div class="field" id="courtWrap" style="display:none">
+        <label>Sud <span class="hint">npr. Osnovni sud u Novom Sadu</span></label>
+        <input id="fCourt" list="courtList" placeholder="npr. Viši sud u Beogradu" autocomplete="off">
+        <datalist id="courtList"></datalist>
+      </div>
+      <div class="field" id="roomWrap" style="display:none">
+        <label>Sala / soba <span class="hint">opciono</span></label>
+        <input id="fRoom" placeholder="npr. Sala 3 / soba 215">
       </div>
       <div class="row2">
         <div class="field">
@@ -358,7 +377,7 @@
           <select id="fWho"></select>
         </div>
         <div class="field">
-          <label>Rok <span class="hint">datum</span></label>
+          <label><span id="dateLbl">Rok</span> <span class="hint">datum</span></label>
           <input type="date" id="fDate">
         </div>
       </div>
@@ -415,7 +434,17 @@ const TYPES = [
   {v:'Katastar (podnesak)',            c:'b-admin'},
   {v:'Ostalo',                         c:'b-other'},
 ];
-function typeClass(t){ const x=TYPES.find(y=>y.v===t); return x?x.c:'b-other'; }
+// Tipovi ročišta (kada je kind === 'rociste')
+const TYPES_HEARING = [
+  {v:'Glavna rasprava',     c:'b-rociste'},
+  {v:'Pripremno ročište',   c:'b-rociste'},
+  {v:'Ročište',             c:'b-rociste'},
+  {v:'Pretres',             c:'b-rociste'},
+  {v:'Saslušanje',          c:'b-rociste'},
+  {v:'Uviđaj',              c:'b-rociste'},
+  {v:'Ostalo',              c:'b-rociste'},
+];
+function typeClass(t){ const x=TYPES.find(y=>y.v===t)||TYPES_HEARING.find(y=>y.v===t); return x?x.c:'b-other'; }
 
 // ===================== STORAGE =====================
 const store={
@@ -439,6 +468,7 @@ function seedTasks(){
     {id:uid(), num:'I 88/2024', type:'Predlog za izvršenje', who:'dunja', date:d(-1), time:'', status:'otvoreno', note:'Rok je prošao — proveriti', approved:true, approvedBy:'milan', created:Date.now()-2000},
     {id:uid(), num:'P 412/2025', type:'Zvati za plaćanje', who:'sofija', date:d(0), time:'10:00', status:'otvoreno', note:'Klijent kasni sa avansom', approved:true, approvedBy:'sofija', created:Date.now()-3000},
     {id:uid(), num:'Kž 1-303/25', type:'Žalba', who:'djordje', date:d(4), time:'', status:'otvoreno', note:'Uneo Đorđe — čeka odobrenje', approved:false, approvedBy:null, created:Date.now()-500},
+    {id:uid(), num:'K 120/2025', type:'Glavna rasprava', kind:'rociste', court:'Osnovni sud u Novom Sadu', room:'Sala 3', who:'sofija', date:d(1), time:'09:30', status:'otvoreno', note:'Poneti spise i punomoćje', approved:true, approvedBy:'milan', created:Date.now()-400},
   ];
 }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
@@ -460,6 +490,7 @@ function init(){
   document.getElementById('fWho').innerHTML = TEAM.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
   // predmeti datalist
   refreshPredmetiList();
+  refreshCourtList();
 
   // view segmenti
   document.querySelectorAll('#viewSeg button').forEach(b=>{
@@ -475,6 +506,11 @@ function init(){
 
 function refreshPredmetiList(){
   document.getElementById('predmetiList').innerHTML = predmeti.map(p=>`<option value="${p}">`).join('');
+}
+function refreshCourtList(){
+  const courts=[...new Set(tasks.filter(t=>t.court).map(t=>t.court))];
+  const el=document.getElementById('courtList');
+  if(el) el.innerHTML = courts.map(c=>`<option value="${esc(c)}">`).join('');
 }
 
 // ===================== LOGIN =====================
@@ -584,11 +620,11 @@ function renderCalendar(){
       html+=dayTasks.map(t=>{
         const who=TEAM.find(p=>p.id===t.who)||{name:'?'};
         const r=rokInfo(t.date);
-        const dot = !t.approved ? 'ci-pend' : (t.status==='gotovo'?'ci-ok':r.cls==='over'?'ci-over':r.cls==='soon'?'ci-soon':'ci-ok');
+        const dot = !t.approved ? 'ci-pend' : (t.kind==='rociste' ? 'ci-rociste' : (t.status==='gotovo'?'ci-ok':r.cls==='over'?'ci-over':r.cls==='soon'?'ci-soon':'ci-ok'));
         return `<div class="cal-item" onclick="openEdit('${t.id}')">
           <span class="ci-dot ${dot}"></span>
           <div class="ci-body">
-            <div class="ci-type">${esc(shortType(t.type))}</div>
+            <div class="ci-type">${t.kind==='rociste'?'⚖️ ':''}${esc(shortType(t.type))}</div>
             <div class="ci-sub">${t.time?'🕑 '+t.time+' · ':''}${who.name.split(' ')[0]}${t.num?' · <span class="ci-num">'+esc(t.num)+'</span>':''}${!t.approved?' · ⏳':''}</div>
           </div>
         </div>`;
@@ -612,6 +648,7 @@ function render(){
 
   if(currentView==='moji') arr=arr.filter(t=>t.who===currentUser);
   else if(currentView==='odob') arr=arr.filter(t=>!t.approved);
+  else if(currentView==='rocista') arr=arr.filter(t=>t.kind==='rociste');
 
   const sort=document.getElementById('sortSel').value;
   if(sort==='rok') arr.sort((a,b)=>(rokInfo(a.date).days)-(rokInfo(b.date).days));
@@ -621,8 +658,10 @@ function render(){
   if(arr.length===0){
     const msg = currentView==='odob' ? 'Nema zadataka na čekanju — sve je odobreno ✓'
       : currentView==='moji' ? 'Nemaš dodeljenih zadataka.'
+      : currentView==='rocista' ? 'Još nema ročišta. Dodaj ročište dugmetom dole.'
       : 'Dodaj prvi zadatak dugmetom dole.';
-    list.innerHTML=`<div class="empty"><div class="big">${currentView==='odob'?'✅':'📋'}</div><b>Nema zadataka</b>${msg}</div>`;
+    const emptyTitle = currentView==='rocista' ? 'Nema ročišta' : 'Nema zadataka';
+    list.innerHTML=`<div class="empty"><div class="big">${currentView==='odob'?'✅':currentView==='rocista'?'⚖️':'📋'}</div><b>${emptyTitle}</b>${msg}</div>`;
     return;
   }
 
@@ -673,6 +712,30 @@ function taskCard(t){
     }
   }
 
+  if(t.kind==='rociste'){
+    const hp=[];
+    if(t.court) hp.push('🏛️ '+esc(t.court));
+    if(t.room)  hp.push('🚪 '+esc(t.room));
+    if(t.time)  hp.push('🕑 '+esc(t.time));
+    const hear=hp.join('');
+    return `<div class="task kind-rociste ${dueClass} ${pendingCls}" onclick="openEdit('${t.id}')">
+      <div class="t-top">
+        <div>
+          <div class="t-title">⚖️ ${esc(t.type)}</div>
+          <div class="t-num mono">${esc(t.num||'—')}</div>
+        </div>
+        ${!t.approved?'<span class="pend-tag">⏳ Čeka</span>':'<span class="t-badge b-rociste">Ročište</span>'}
+      </div>
+      <div class="t-meta">
+        <span class="t-rok ${r.cls}">🗓️ ${r.txt}${t.date?' · '+fmtDate(t.date)+timeStr:''}</span>
+        <span class="t-who"><span class="avatar">${who.av}</span>${who.name.split(' ')[0]}</span>
+        <span class="t-status ${stClass}">${stTxt}</span>
+      </div>
+      ${hear?`<div class="t-hear">${hp.map(x=>`<span>${x}</span>`).join('')}</div>`:''}
+      ${t.note?`<div class="t-note">${esc(t.note)}</div>`:''}
+      ${approveHtml}
+    </div>`;
+  }
   return `<div class="task ${dueClass} ${pendingCls}" onclick="openEdit('${t.id}')">
     <div class="t-top">
       <div>
@@ -698,26 +761,33 @@ function openNew(){
   editingId=null;
   document.getElementById('modalTitle').textContent='Novi zadatak';
   document.getElementById('fNum').value='';
-  document.getElementById('fType').value=TYPES[0].v;
   document.getElementById('fOther').value='';
+  document.getElementById('fCourt').value='';
+  document.getElementById('fRoom').value='';
   document.getElementById('fWho').value=currentUser;
   document.getElementById('fDate').value='';
   document.getElementById('fTime').value='';
   document.getElementById('fStatus').value='otvoreno';
   document.getElementById('fNote').value='';
   document.getElementById('delBtn').style.display='none';
-  toggleOther();
+  // ako se otvara iz taba Ročišta, podrazumevaj ročište
+  setKind(currentView==='rocista' ? 'rociste' : 'rok');
   document.getElementById('overlay').classList.add('open');
 }
 function openEdit(id){
   const t=tasks.find(x=>x.id===id); if(!t)return;
   editingId=id;
-  document.getElementById('modalTitle').textContent='Izmeni zadatak';
+  document.getElementById('modalTitle').textContent=t.kind==='rociste'?'Izmeni ročište':'Izmeni zadatak';
+  // postavi vrstu (rok/ročište) i odgovarajuću listu tipova
+  setKind(t.kind==='rociste'?'rociste':'rok');
   // ako je tip custom (Ostalo), prikaži ga
-  const known=TYPES.find(y=>y.v===t.type);
+  const list=t.kind==='rociste'?TYPES_HEARING:TYPES;
+  const known=list.find(y=>y.v===t.type);
   if(known){ document.getElementById('fType').value=t.type; document.getElementById('fOther').value=''; }
   else { document.getElementById('fType').value='Ostalo'; document.getElementById('fOther').value=t.type; }
   document.getElementById('fNum').value=t.num||'';
+  document.getElementById('fCourt').value=t.court||'';
+  document.getElementById('fRoom').value=t.room||'';
   document.getElementById('fWho').value=t.who;
   document.getElementById('fDate').value=t.date||'';
   document.getElementById('fTime').value=t.time||'';
@@ -732,13 +802,36 @@ function toggleOther(){
   const isOther=document.getElementById('fType').value==='Ostalo';
   document.getElementById('otherWrap').style.display=isOther?'block':'none';
 }
+let formKind='rok';
+function setKind(k){
+  formKind=k;
+  document.querySelectorAll('#kindSeg button').forEach(b=>b.classList.toggle('on', b.dataset.kind===k));
+  toggleKind();
+}
+function toggleKind(){
+  const isR = formKind==='rociste';
+  const sel=document.getElementById('fType');
+  const cur=sel.value;
+  const list=isR?TYPES_HEARING:TYPES;
+  sel.innerHTML=list.map(t=>`<option value="${esc(t.v)}">${esc(t.v)}</option>`).join('');
+  sel.value = list.find(x=>x.v===cur) ? cur : list[0].v;
+  document.getElementById('courtWrap').style.display=isR?'block':'none';
+  document.getElementById('roomWrap').style.display=isR?'block':'none';
+  if(isR) refreshCourtList();
+  document.getElementById('typeLbl').textContent=isR?'Vrsta ročišta':'Tip zadatka';
+  document.getElementById('dateLbl').textContent=isR?'Datum ročišta':'Rok';
+  toggleOther();
+}
 function saveTask(){
   const typeSel=document.getElementById('fType').value;
   const other=document.getElementById('fOther').value.trim();
   const finalType = typeSel==='Ostalo' ? (other||'Ostalo') : typeSel;
   const num=document.getElementById('fNum').value.trim();
+  const isR = formKind==='rociste';
+  const court = isR ? document.getElementById('fCourt').value.trim() : '';
+  const room  = isR ? document.getElementById('fRoom').value.trim() : '';
   const obj={
-    num, type:finalType,
+    num, type:finalType, kind:formKind, court, room,
     who:document.getElementById('fWho').value,
     date:document.getElementById('fDate').value,
     time:document.getElementById('fTime').value,
@@ -758,7 +851,8 @@ function saveTask(){
   // dodaj broj u predmete ako je nov
   if(num && !predmeti.includes(num)){ predmeti.push(num); refreshPredmetiList(); }
   save(); closeModal(); render();
-  let msg = editingId ? 'Zadatak izmenjen ✓' : (obj.approved ? 'Zadatak dodat i odobren ✓' : 'Zadatak dodat — čeka odobrenje ⏳');
+  const imenica = isR ? 'Ročište' : 'Zadatak';
+  let msg = editingId ? imenica+' izmenjen'+(isR?'o':'')+' ✓' : (obj.approved ? imenica+' dodat'+(isR?'o i odobreno':' i odobren')+' ✓' : imenica+' dodat'+(isR?'o':'')+' — čeka odobrenje ⏳');
   showToast(msg);
 }
 function delTask(){
