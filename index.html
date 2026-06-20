@@ -42,6 +42,9 @@
   .brand-txt{display:flex; flex-direction:column; min-width:0}
   .brand-txt b{font-size:16px; font-weight:800; letter-spacing:-.02em; white-space:nowrap}
   .brand-txt span{font-size:11px; opacity:.8}
+  .hdr-dt{display:flex; align-items:baseline; gap:8px; margin-top:4px; white-space:nowrap}
+  .hdr-date{font-size:15px; font-weight:800; letter-spacing:-.01em; opacity:1}
+  .hdr-clock{font-size:13px; font-weight:700; opacity:.92}
   .nick{color:var(--green); font-weight:700; font-size:.85em}
   .tagline{font-size:15px; font-style:italic; color:var(--indigo); font-weight:600; margin:2px 0 8px}
   .user-chip{
@@ -110,9 +113,10 @@
   .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px}
   .stat .n{font-size:22px; font-weight:800; letter-spacing:-.02em; line-height:1}
   .stat .l{font-size:11px; color:var(--muted); margin-top:4px; font-weight:600}
+  .stat.urgent{background:var(--red-50); border-color:#f1c4bf}
   .stat.urgent .n{color:var(--red)}
-  .stat.soon .n{color:var(--orange)}
-  .stat.ok .n{color:var(--green)}
+  .stat.today .n{color:var(--orange)}
+  .stat.week .n{color:var(--green)}
   .stat.total .n{color:var(--indigo)}
 
   /* group header */
@@ -290,7 +294,7 @@
 <div class="app" id="appScreen">
   <header>
     <div class="brand">
-      <span class="brand-txt"><b>The Office</b><span>Kancelarija Mišić</span></span>
+      <span class="brand-txt"><b>The Office</b><span>Kancelarija Mišić</span><span class="hdr-dt"><span class="hdr-date" id="hdrDate"></span><span class="hdr-clock mono" id="hdrClock"></span></span></span>
     </div>
     <button class="user-chip" id="userChip" onclick="changeUser()">
       <span class="avatar" id="userAvatar">M</span>
@@ -637,12 +641,12 @@ function render(){
 function renderStats(){
   const mine = currentView==='moji' ? tasks.filter(t=>t.who===currentUser) : tasks;
   const active=mine.filter(t=>t.status!=='gotovo');
-  let over=0,soon=0,ok=0;
-  active.forEach(t=>{ const r=rokInfo(t.date); if(r.days<=0)over++; else if(r.days<=7)soon++; else ok++; });
+  let danas=0,hitno=0,ned=0;
+  active.forEach(t=>{ const r=rokInfo(t.date); if(r.days<0)hitno++; else if(r.days===0)danas++; else if(r.days<=7)ned++; });
   document.getElementById('stats').innerHTML=`
-    <div class="stat urgent"><div class="n">${over}</div><div class="l">Hitno / isteklo</div></div>
-    <div class="stat soon"><div class="n">${soon}</div><div class="l">Ove nedelje</div></div>
-    <div class="stat ok"><div class="n">${ok}</div><div class="l">Kasnije</div></div>
+    <div class="stat today"><div class="n">${danas}</div><div class="l">Danas</div></div>
+    <div class="stat urgent"><div class="n">${hitno}</div><div class="l">HITNO / isteklo</div></div>
+    <div class="stat week"><div class="n">${ned}</div><div class="l">Ove nedelje</div></div>
     <div class="stat total"><div class="n">${active.length}</div><div class="l">Ukupno aktivnih</div></div>`;
 }
 
@@ -809,6 +813,18 @@ function showToast(msg,err){
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
 }
+
+// ===================== ŽIVI DATUM + SAT =====================
+function tickClock(){
+  const now=new Date();
+  const dani=['Nedelja','Ponedeljak','Utorak','Sreda','Četvrtak','Petak','Subota'];
+  const p=n=>String(n).padStart(2,'0');
+  const de=document.getElementById('hdrDate');
+  const ce=document.getElementById('hdrClock');
+  if(de) de.textContent=`${dani[now.getDay()]}, ${p(now.getDate())}.${p(now.getMonth()+1)}.${now.getFullYear()}.`;
+  if(ce) ce.textContent=`${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
+}
+tickClock(); setInterval(tickClock,1000);
 
 // close modal on overlay click
 document.getElementById('overlay').onclick=(e)=>{ if(e.target.id==='overlay') closeModal(); };
