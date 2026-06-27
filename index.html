@@ -18,6 +18,7 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap"></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     /* ===== The Office — Elegant Editorial =====
@@ -559,6 +560,72 @@ function seedTasks(){
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 function save(){ store.set(K_TASKS,tasks); store.set(K_PRED,predmeti); store.set(K_SUD,sudovi); }
 
+// ===================== ZAJEDNIČKA BAZA (Supabase) =====================
+// Svi uređaji vide isto, uživo. localStorage ostaje samo offline keš.
+const SUPA_URL='https://rwocmswcoopftolmrwtl.supabase.co';
+const SUPA_KEY='sb_publishable_VxWJKIloPZXGMXpPVcLCvw_UjwfbkTF';
+let supa=null, cloudOn=false;
+try{ if(window.supabase) supa=window.supabase.createClient(SUPA_URL,SUPA_KEY); }catch(e){ supa=null; }
+
+function taskToRow(t){ return {
+  id:t.id, num:t.num||null, type:t.type||null, kind:t.kind||'rok',
+  court:t.court||null, room:t.room||null, who:t.who||null,
+  date:t.date||null, time:t.time||null, status:t.status||null,
+  note:t.note||null, approved:!!t.approved, approved_by:t.approvedBy||null,
+  created:t.created||Date.now() }; }
+function rowToTask(r){ return {
+  id:r.id, num:r.num||'', type:r.type||'', kind:r.kind||'rok',
+  court:r.court||'', room:r.room||'', who:r.who||'',
+  date:r.date||'', time:r.time||'', status:r.status||'otvoreno',
+  note:r.note||'', approved:!!r.approved, approvedBy:r.approved_by||null,
+  created:Number(r.created)||0 }; }
+
+async function cloudLoad(){
+  if(!supa) return false;
+  const {data:trows,error}=await supa.from('tasks').select('*');
+  if(error) throw error;
+  const {data:mrows}=await supa.from('meta').select('*');
+  tasks=(trows||[]).map(rowToTask).sort((a,b)=>b.created-a.created);
+  if(mrows){
+    const mp=mrows.find(m=>m.key==='predmeti'); if(mp&&Array.isArray(mp.value)) predmeti=mp.value;
+    const ms=mrows.find(m=>m.key==='sudovi');   if(ms&&Array.isArray(ms.value)) sudovi=ms.value;
+  }
+  save(); cloudOn=true; return true;
+}
+async function cloudPushTask(t){ if(!supa)return; try{ await supa.from('tasks').upsert(taskToRow(t)); }catch(e){ console.warn('cloud upsert',e);} }
+async function cloudDeleteTask(id){ if(!supa)return; try{ await supa.from('tasks').delete().eq('id',id);}catch(e){ console.warn('cloud delete',e);} }
+async function cloudPushMeta(){ if(!supa)return; try{ await supa.from('meta').upsert([{key:'predmeti',value:predmeti},{key:'sudovi',value:sudovi}]); }catch(e){ console.warn('cloud meta',e);} }
+
+let _cloudTimer=null;
+function cloudSoftRefresh(){ clearTimeout(_cloudTimer);
+  _cloudTimer=setTimeout(async()=>{ try{ await cloudLoad(); refreshPredmetiList(); refreshSudoviList(); render(); }catch(e){} },300); }
+function cloudSubscribe(){
+  if(!supa)return;
+  try{ supa.channel('office-rt')
+    .on('postgres_changes',{event:'*',schema:'public',table:'tasks'},cloudSoftRefresh)
+    .on('postgres_changes',{event:'*',schema:'public',table:'meta'},cloudSoftRefresh)
+    .subscribe(); }catch(e){ console.warn('realtime',e); }
+}
+async function cloudInit(){
+  if(!supa){ console.warn('Supabase nije učitan — radim lokalno'); return; }
+  // lokalno sačuvano pre sinhronizacije (za spajanje pri prvom pokretanju/offline izmenama)
+  const storedTasks=store.get(K_TASKS)||[];
+  const storedPred=store.get(K_PRED)||[], storedSud=store.get(K_SUD)||[];
+  try{
+    await cloudLoad();
+    // spoji lokalne stavke koje još nisu u oblaku (po id-u) — niko ne gubi svoje
+    const ids=new Set(tasks.map(t=>t.id));
+    const missing=storedTasks.filter(t=>t&&t.id&&!ids.has(t.id));
+    let metaChanged=false;
+    const mergePred=[...new Set([...predmeti,...storedPred])]; if(mergePred.length!==predmeti.length){ predmeti=mergePred; metaChanged=true; }
+    const mergeSud=[...new Set([...sudovi,...storedSud])];      if(mergeSud.length!==sudovi.length){ sudovi=mergeSud; metaChanged=true; }
+    if(missing.length){ tasks=[...missing,...tasks].sort((a,b)=>b.created-a.created); await supa.from('tasks').upsert(missing.map(taskToRow)); }
+    if(metaChanged) await cloudPushMeta();
+    save(); refreshPredmetiList(); refreshSudoviList(); render();
+    cloudSubscribe();
+  }catch(e){ console.warn('Oblak nedostupan — koristim lokalni keš', e); }
+}
+
 // ===================== INIT =====================
 function init(){
   // login lista
@@ -586,7 +653,10 @@ function init(){
   // excel
   document.getElementById('xlsxInput').onchange = handleExcel;
 
-  if(currentUser){ enterApp(); } 
+  if(currentUser){ enterApp(); }
+
+  // poveži se na zajedničku bazu i sinhronizuj (uživo)
+  cloudInit();
 }
 
 function refreshPredmetiList(){
@@ -649,7 +719,7 @@ function approveTask(id, ev){
   const t=tasks.find(x=>x.id===id); if(!t) return;
   if(!canApprove(currentUser)){ showToast(sofijaWindowMsg(),true); return; }
   t.approved=true; t.approvedBy=currentUser;
-  save(); render(); showToast('Zadatak odobren ✓');
+  save(); render(); cloudPushTask(t); showToast('Zadatak odobren ✓');
 }
 function updatePendBadge(){
   const n=tasks.filter(t=>!t.approved).length;
@@ -928,18 +998,23 @@ function saveTask(){
     tasks.unshift(obj);
   }
   // dodaj broj u predmete ako je nov
-  if(num && !predmeti.includes(num)){ predmeti.push(num); refreshPredmetiList(); }
+  let metaNew=false;
+  if(num && !predmeti.includes(num)){ predmeti.push(num); refreshPredmetiList(); metaNew=true; }
   // dodaj sud u listu sudova ako je nov
-  if(court && !sudovi.includes(court)){ sudovi.push(court); refreshSudoviList(); }
+  if(court && !sudovi.includes(court)){ sudovi.push(court); refreshSudoviList(); metaNew=true; }
+  const saved = editingId ? tasks.find(x=>x.id===editingId) : obj;
   save(); closeModal(); render();
+  cloudPushTask(saved); if(metaNew) cloudPushMeta();
   let msg = editingId ? 'Zadatak izmenjen ✓' : (obj.approved ? 'Zadatak dodat i odobren ✓' : 'Zadatak dodat — čeka odobrenje ⏳');
   showToast(msg);
 }
 function delTask(){
   if(!editingId)return;
   if(!confirm('Obrisati ovaj zadatak?'))return;
-  tasks=tasks.filter(x=>x.id!==editingId);
+  const delId=editingId;
+  tasks=tasks.filter(x=>x.id!==delId);
   save(); closeModal(); render();
+  cloudDeleteTask(delId);
   showToast('Zadatak obrisan');
 }
 
@@ -971,7 +1046,7 @@ function handleExcel(e){
       // spoji sa postojećim
       const before=predmeti.length;
       found.forEach(f=>{ if(!predmeti.includes(f)) predmeti.push(f); });
-      refreshPredmetiList(); save();
+      refreshPredmetiList(); save(); cloudPushMeta();
       showToast(`Uvezeno ${found.length} predmeta (${predmeti.length-before} novih) ✓`);
     }catch(err){
       showToast('Greška pri čitanju Excel-a: '+err.message,true);
