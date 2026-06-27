@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>The Office — Kancelarija Mišić</title>
-<meta name="theme-color" content="#1b5e20">
+<meta name="theme-color" content="#0f3d2e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="The Office">
@@ -12,269 +12,360 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" type="image/png" href="icon-192.png">
+<!-- Google Fonts: Manrope (UI) + Fraunces (editorial headings). Non-blocking; strong system fallbacks for offline. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap"></noscript>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
-    /* The Office — zelena dominantna */
-    --indigo:#1b5e20; --indigo-600:#14521b; --indigo-50:#e8f5e9;
-    --red:#c62828; --red-50:#fdecea;
-    --orange:#ef6c00; --orange-50:#fff4e5;
-    --green:#43a047; --green-50:#edf7ed;
-    --bg:#f3f6f3; --card:#ffffff; --ink:#15201a; --muted:#5a6b5f;
-    --line:#dde7df; --shadow:0 1px 3px rgba(20,40,25,.08),0 1px 2px rgba(20,40,25,.05);
-    --shadow-lg:0 10px 30px rgba(20,40,25,.16); --radius:14px;
+    /* ===== The Office — Elegant Editorial =====
+       Zelena dominantna + Claude/Bitcoin narandžasta (#f7931a) kao prominentan drugi akcenat */
+    --green:#0f3d2e;        /* deep editorial green (brand) */
+    --green-700:#16513c;
+    --green-600:#1d6b4f;
+    --green-500:#2e8b63;
+    --green-tint:#e7f0ea;   /* soft green-tinted surface */
+    --green-tint-2:#eef5f0;
+    --orange:#f7931a;       /* Claude / Bitcoin orange — prominent accent */
+    --orange-600:#e07f08;
+    --orange-50:#fff3e0;
+    --red:#b3261e; --red-50:#fbe9e7;
+    --gold:#b08642;
+    /* surfaces */
+    --bg:#f6f4ee;           /* warm cream paper */
+    --bg-2:#f0eee6;
+    --card:#fffefb;         /* near-white warm card */
+    --ink:#1c241f; --ink-soft:#36433b; --muted:#6a7a70;
+    --line:#e3ded2;         /* warm hairline */
+    --line-2:#d8e0d6;
+    --shadow:0 1px 2px rgba(15,40,28,.05), 0 2px 8px rgba(15,40,28,.05);
+    --shadow-lg:0 16px 44px rgba(15,40,28,.18);
+    --radius:16px;
+    --ui:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    --serif:"Fraunces",Georgia,"Times New Roman",serif;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
-    background:var(--bg); color:var(--ink); line-height:1.5;
-    font-size:15px; -webkit-font-smoothing:antialiased;
+    font-family:var(--ui);
+    background:
+      radial-gradient(120% 80% at 100% 0%, rgba(247,147,26,.06), transparent 55%),
+      radial-gradient(120% 90% at 0% 100%, rgba(15,61,46,.05), transparent 55%),
+      var(--bg);
+    color:var(--ink); line-height:1.55;
+    font-size:15px; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
   }
-  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-feature-settings:"tnum" 1}
+  /* small-caps editorial section label helper */
+  .eyebrow{font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--muted)}
 
   /* ===== HEADER ===== */
   header{
-    position:sticky; top:0; z-index:50; background:var(--indigo);
-    color:#fff; padding:12px 16px; display:flex; align-items:center;
-    justify-content:space-between; gap:10px; box-shadow:var(--shadow);
+    position:sticky; top:0; z-index:50;
+    background:linear-gradient(180deg,#13452f 0%, var(--green) 100%);
+    color:#fff; padding:14px 18px 0; box-shadow:var(--shadow);
+    border-bottom:3px solid var(--orange);
   }
-  .brand{display:flex; align-items:center; gap:10px; min-width:0}
+  .header-inner{
+    max-width:980px; margin:0 auto; display:flex; align-items:center;
+    justify-content:space-between; gap:10px; padding-bottom:13px;
+  }
+  .brand{display:flex; align-items:center; gap:12px; min-width:0}
+  .brand-badge{
+    width:42px; height:42px; flex-shrink:0; border-radius:12px;
+    background:linear-gradient(150deg, rgba(247,147,26,.95), rgba(247,147,26,.7));
+    color:#13452f; display:grid; place-items:center; font-size:21px;
+    box-shadow:0 3px 10px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.4);
+  }
   .brand-txt{display:flex; flex-direction:column; min-width:0}
-  .brand-txt b{font-size:16px; font-weight:800; letter-spacing:-.02em; white-space:nowrap}
-  .brand-txt span{font-size:11px; opacity:.8}
-  .hdr-dt{display:flex; align-items:baseline; gap:8px; margin-top:4px; white-space:nowrap}
-  .hdr-date{font-size:15px; font-weight:800; letter-spacing:-.01em; opacity:1}
-  .hdr-clock{font-size:13px; font-weight:700; opacity:.92}
-  .nick{color:var(--green); font-weight:700; font-size:.85em}
-  .tagline{font-size:15px; font-style:italic; color:var(--indigo); font-weight:600; margin:2px 0 8px}
-  .user-chip{
-    display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.14);
-    padding:6px 10px; border-radius:999px; cursor:pointer; border:none;
-    color:#fff; font-size:13px; font-weight:600; white-space:nowrap;
+  .brand-txt b{
+    font-family:var(--serif); font-size:21px; font-weight:600; letter-spacing:.005em;
+    line-height:1.05; white-space:nowrap; color:#fff;
   }
-  .user-chip:hover{background:rgba(255,255,255,.22)}
+  .brand-txt > span{font-size:11px; opacity:.78; letter-spacing:.04em; font-weight:500}
+  .hdr-dt{display:flex; align-items:baseline; gap:9px; margin-top:5px; white-space:nowrap}
+  .hdr-date{font-size:14px; font-weight:700; letter-spacing:.01em; opacity:.95}
+  .hdr-clock{font-size:13px; font-weight:600; opacity:.78; color:var(--orange)}
+  .nick{color:var(--orange); font-weight:700; font-size:.85em}
+  .tagline{font-family:var(--serif); font-size:16px; font-style:italic; color:var(--green-600); font-weight:500; margin:3px 0 10px}
+  .user-chip{
+    display:flex; align-items:center; gap:9px; background:rgba(255,255,255,.10);
+    padding:6px 12px 6px 6px; border-radius:999px; cursor:pointer;
+    border:1px solid rgba(255,255,255,.18);
+    color:#fff; font-size:13px; font-weight:600; white-space:nowrap; transition:.18s;
+  }
+  .user-chip:hover{background:rgba(255,255,255,.18); border-color:rgba(247,147,26,.5)}
   .avatar{
-    width:24px; height:24px; border-radius:50%; background:#fff; color:var(--indigo);
-    display:grid; place-items:center; font-size:11px; font-weight:700; flex-shrink:0;
+    width:26px; height:26px; border-radius:50%;
+    background:linear-gradient(150deg,var(--orange),var(--orange-600)); color:#13452f;
+    display:grid; place-items:center; font-size:11px; font-weight:800; flex-shrink:0;
   }
 
   /* ===== LOGIN SCREEN ===== */
   .login{
     min-height:100vh; display:grid; place-items:center; padding:24px;
-    background:linear-gradient(160deg,#1a237e 0%,#283593 55%,#3949ab 100%);
+    background:
+      radial-gradient(90% 70% at 85% 10%, rgba(247,147,26,.16), transparent 60%),
+      radial-gradient(80% 60% at 10% 100%, rgba(46,139,99,.30), transparent 60%),
+      linear-gradient(165deg,#0c3326 0%, #0f3d2e 55%, #123f30 100%);
   }
   .login-card{
-    background:#fff; border-radius:20px; padding:32px 24px; max-width:420px; width:100%;
-    box-shadow:var(--shadow-lg); text-align:center;
+    position:relative; background:var(--card); border-radius:24px; padding:38px 28px 30px;
+    max-width:420px; width:100%; box-shadow:var(--shadow-lg); text-align:center;
+    border:1px solid rgba(255,255,255,.5); overflow:hidden;
   }
-  .login-card h1{font-size:22px; color:var(--indigo); letter-spacing:-.02em; margin-bottom:4px}
-  .login-card .sub{color:var(--muted); font-size:13px; margin-bottom:24px}
-  .who{font-size:13px; font-weight:600; color:var(--muted); text-align:left; margin-bottom:10px}
-  .people{display:flex; flex-direction:column; gap:8px}
+  .login-card::before{content:""; position:absolute; left:0; right:0; top:0; height:5px;
+    background:linear-gradient(90deg, var(--green) 0%, var(--green) 60%, var(--orange) 60%, var(--orange) 100%)}
+  .login-badge{
+    width:60px; height:60px; margin:4px auto 16px; border-radius:18px;
+    background:linear-gradient(150deg,var(--green),var(--green-600)); color:var(--orange);
+    display:grid; place-items:center; font-size:30px;
+    box-shadow:0 8px 22px rgba(15,61,46,.3), inset 0 1px 0 rgba(255,255,255,.15);
+  }
+  .login-card h1{font-family:var(--serif); font-size:30px; font-weight:600; color:var(--green); letter-spacing:.01em; margin-bottom:2px}
+  .login-card .sub{color:var(--muted); font-size:13px; margin-bottom:26px; letter-spacing:.01em}
+  .who{font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); text-align:left; margin:0 2px 12px}
+  .people{display:flex; flex-direction:column; gap:9px}
   .person-btn{
-    display:flex; align-items:center; gap:12px; padding:12px 14px; border:1.5px solid var(--line);
-    border-radius:12px; background:#fff; cursor:pointer; text-align:left; transition:.15s; width:100%;
+    display:flex; align-items:center; gap:13px; padding:12px 14px;
+    border:1px solid var(--line); border-radius:14px; background:#fff;
+    cursor:pointer; text-align:left; transition:.18s; width:100%; position:relative;
   }
-  .person-btn:hover{border-color:var(--indigo); background:var(--indigo-50)}
-  .person-btn .avatar{width:36px; height:36px; font-size:14px; background:var(--indigo); color:#fff}
-  .person-btn .pi b{display:block; font-size:15px; color:var(--ink)}
+  .person-btn::after{content:"›"; position:absolute; right:16px; font-size:20px; color:var(--line-2); transition:.18s; font-weight:600}
+  .person-btn:hover{border-color:var(--green-500); background:var(--green-tint); transform:translateX(2px)}
+  .person-btn:hover::after{color:var(--orange); transform:translateX(3px)}
+  .person-btn .avatar{width:40px; height:40px; font-size:15px; border-radius:12px;
+    background:linear-gradient(150deg,var(--green),var(--green-600)); color:#fff}
+  .person-btn .pi b{display:block; font-size:15px; font-weight:700; color:var(--ink)}
   .person-btn .pi span{font-size:12px; color:var(--muted)}
 
   /* ===== APP LAYOUT ===== */
   .app{display:none}
   .app.active{display:block}
-  main{max-width:980px; margin:0 auto; padding:16px; padding-bottom:96px}
+  main{max-width:980px; margin:0 auto; padding:18px 16px; padding-bottom:104px}
 
   /* toolbar */
-  .toolbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:14px}
-  .seg{display:flex; flex-wrap:wrap; background:#fff; border:1px solid var(--line); border-radius:10px; padding:3px; gap:2px}
+  .toolbar{display:flex; gap:9px; flex-wrap:wrap; align-items:center; margin-bottom:16px}
+  .seg{display:flex; background:var(--card); border:1px solid var(--line); border-radius:999px;
+    padding:4px; gap:2px; box-shadow:var(--shadow); max-width:100%}
+  /* viewSeg: prelama se u više redova da svi tabovi (uklj. Odobrenje) uvek budu vidljivi */
+  #viewSeg{flex-wrap:wrap; row-gap:3px; border-radius:20px}
+  #viewSeg button{flex:0 0 auto}
   .seg button{
-    border:none; background:none; padding:7px 12px; border-radius:7px; font-size:13px;
-    font-weight:600; color:var(--muted); cursor:pointer; white-space:nowrap;
+    border:none; background:none; padding:8px 14px; border-radius:999px; font-size:13px;
+    font-weight:600; color:var(--muted); cursor:pointer; white-space:nowrap; transition:.18s;
   }
-  .seg button.on{background:var(--indigo); color:#fff}
+  .seg button:hover{color:var(--green); background:var(--green-tint)}
+  .seg button.on{background:var(--green); color:#fff; box-shadow:0 2px 8px rgba(15,61,46,.25)}
+  .seg button.on:hover{background:var(--green); color:#fff}
   .spacer{flex:1}
   .btn{
-    border:none; border-radius:10px; padding:9px 14px; font-size:13px; font-weight:600;
-    cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:.15s;
+    border:none; border-radius:999px; padding:10px 16px; font-size:13px; font-weight:700;
+    font-family:var(--ui); cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+    transition:.18s; letter-spacing:.005em;
   }
-  .btn-ghost{background:#fff; border:1px solid var(--line); color:var(--ink)}
-  .btn-ghost:hover{border-color:var(--indigo); color:var(--indigo)}
-  .btn-primary{background:var(--indigo); color:#fff}
-  .btn-primary:hover{background:var(--indigo-600)}
+  .btn:active{transform:scale(.97)}
+  .btn-ghost{background:var(--card); border:1px solid var(--line); color:var(--ink-soft)}
+  .btn-ghost:hover{border-color:var(--green-500); color:var(--green); background:var(--green-tint)}
+  .btn-primary{background:var(--green); color:#fff; box-shadow:0 3px 10px rgba(15,61,46,.22)}
+  .btn-primary:hover{background:var(--green-700)}
 
   select.sort{
-    border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 10px;
-    font-size:13px; font-weight:600; color:var(--ink); cursor:pointer;
+    border:1px solid var(--line); background:var(--card); border-radius:999px; padding:9px 14px;
+    font-size:13px; font-weight:600; font-family:var(--ui); color:var(--ink-soft); cursor:pointer;
+    box-shadow:var(--shadow);
   }
+  select.sort:hover{border-color:var(--green-500)}
 
   /* stats row */
-  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px}
-  .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px}
-  .stat .n{font-size:22px; font-weight:800; letter-spacing:-.02em; line-height:1}
-  .stat .l{font-size:11px; color:var(--muted); margin-top:4px; font-weight:600}
-  .stat.urgent{background:var(--red-50); border-color:#f1c4bf}
-  .stat.urgent .n{color:var(--red)}
-  .stat.today .n{color:var(--orange)}
-  .stat.week .n{color:var(--green)}
-  .stat.total .n{color:var(--indigo)}
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:18px}
+  .stat{
+    position:relative; background:var(--card); border:1px solid var(--line);
+    border-radius:14px; padding:14px 14px 13px; overflow:hidden; box-shadow:var(--shadow);
+  }
+  .stat::before{content:""; position:absolute; left:0; top:14px; bottom:14px; width:3px; border-radius:3px; background:var(--line-2)}
+  .stat .n{font-family:var(--serif); font-size:28px; font-weight:600; letter-spacing:0; line-height:1; font-feature-settings:"tnum" 1}
+  .stat .l{font-size:10px; color:var(--muted); margin-top:6px; font-weight:700; letter-spacing:.1em; text-transform:uppercase}
+  .stat.urgent::before{background:var(--red)} .stat.urgent .n{color:var(--red)}
+  .stat.today::before{background:var(--orange)} .stat.today .n{color:var(--orange-600)}
+  .stat.week::before{background:var(--green-500)} .stat.week .n{color:var(--green-500)}
+  .stat.total::before{background:var(--green)} .stat.total .n{color:var(--green)}
 
   /* group header */
-  .group-h{font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase;
-    letter-spacing:.05em; margin:18px 4px 8px; display:flex; align-items:center; gap:8px}
-  .group-h .count{background:var(--line); color:var(--muted); border-radius:999px; padding:1px 8px; font-size:11px}
+  .group-h{font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase;
+    letter-spacing:.14em; margin:22px 4px 10px; display:flex; align-items:center; gap:10px}
+  .group-h::after{content:""; flex:1; height:1px; background:var(--line)}
+  .group-h .count{background:var(--green-tint); color:var(--green-600); border-radius:999px; padding:2px 9px; font-size:11px; font-weight:800; letter-spacing:0}
 
   /* task card */
   .task{
-    background:var(--card); border:1px solid var(--line); border-left:4px solid var(--line);
-    border-radius:var(--radius); padding:14px; margin-bottom:10px; cursor:pointer;
-    transition:.15s; box-shadow:var(--shadow);
+    position:relative; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); padding:15px 16px; margin-bottom:11px; cursor:pointer;
+    transition:.18s cubic-bezier(.2,.7,.3,1); box-shadow:var(--shadow); overflow:hidden;
   }
-  .task:hover{transform:translateY(-1px); box-shadow:var(--shadow-lg)}
-  .task.due-over{border-left-color:var(--red)}
-  .task.due-soon{border-left-color:var(--orange)}
-  .task.due-ok{border-left-color:var(--green)}
-  .task.done{opacity:.6}
+  .task::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--line-2)}
+  .task:hover{transform:translateY(-2px); box-shadow:var(--shadow-lg); border-color:var(--line-2)}
+  .task.due-over::before{background:var(--red)}
+  .task.due-soon::before{background:var(--orange)}
+  .task.due-ok::before{background:var(--green-500)}
+  .task.done{opacity:.62}
   .task.done .t-title{text-decoration:line-through}
 
-  .t-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:8px}
-  .t-title{font-size:15px; font-weight:700; letter-spacing:-.01em}
-  .t-num{font-size:12px; font-weight:700; color:var(--indigo); background:var(--indigo-50);
-    padding:2px 8px; border-radius:6px; display:inline-block; margin-top:3px}
-  .t-badge{font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; white-space:nowrap; flex-shrink:0}
-  .b-akt{background:var(--indigo-50); color:var(--indigo)}
-  .b-odg{background:#e3f2fd; color:#1565c0}
-  .b-izv{background:#f3e5f5; color:#7b1fa2}
-  .b-kriv{background:#fce4ec; color:#c2185b}
-  .b-poziv{background:var(--orange-50); color:var(--orange)}
-  .b-admin{background:#eceff1; color:#546e7a}
-  .b-other{background:#f5f5f5; color:#616161}
+  .t-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:9px}
+  .t-title{font-size:16px; font-weight:700; letter-spacing:-.005em; color:var(--ink)}
+  .t-num{font-size:12px; font-weight:700; color:var(--green-600); background:var(--green-tint);
+    padding:3px 9px; border-radius:7px; display:inline-block; margin-top:5px; border:1px solid var(--line-2)}
+  .t-badge{font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; white-space:nowrap; flex-shrink:0; letter-spacing:.01em}
+  .b-akt{background:var(--green-tint); color:var(--green-600)}
+  .b-odg{background:#e3eef6; color:#1c5b86}
+  .b-izv{background:#efe6f3; color:#6a3a86}
+  .b-kriv{background:#f7e3e9; color:#a82a52}
+  .b-poziv{background:var(--orange-50); color:var(--orange-600)}
+  .b-admin{background:#e9ece9; color:#566b5e}
+  .b-other{background:#efeee9; color:#666}
 
-  .t-meta{display:flex; align-items:center; gap:12px; flex-wrap:wrap; font-size:12px; color:var(--muted)}
+  .t-meta{display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--muted)}
   .t-rok{display:inline-flex; align-items:center; gap:5px; font-weight:700}
-  .t-rok.over{color:var(--red)} .t-rok.soon{color:var(--orange)} .t-rok.ok{color:var(--green)}
-  .t-who{display:inline-flex; align-items:center; gap:5px}
-  .t-who .avatar{width:18px; height:18px; font-size:9px; background:var(--indigo); color:#fff}
-  .t-note{margin-top:8px; font-size:13px; color:var(--muted); background:#fafbff;
-    border-radius:8px; padding:8px 10px; border:1px solid var(--line)}
-  .t-status{font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px}
-  .st-otvoreno{background:var(--indigo-50); color:var(--indigo)}
-  .st-utoku{background:var(--orange-50); color:var(--orange)}
-  .st-gotovo{background:var(--green-50); color:var(--green)}
+  .t-rok.over{color:var(--red)} .t-rok.soon{color:var(--orange-600)} .t-rok.ok{color:var(--green-500)}
+  .t-who{display:inline-flex; align-items:center; gap:6px; font-weight:600; color:var(--ink-soft)}
+  .t-who .avatar{width:20px; height:20px; font-size:9px; border-radius:6px;
+    background:linear-gradient(150deg,var(--green),var(--green-600)); color:#fff}
+  .t-note{margin-top:10px; font-size:13px; color:var(--ink-soft); background:var(--green-tint-2);
+    border-radius:10px; padding:9px 11px; border:1px solid var(--line); border-left:3px solid var(--orange)}
+  .t-status{font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; letter-spacing:.01em}
+  .st-otvoreno{background:var(--green-tint); color:var(--green-600)}
+  .st-utoku{background:var(--orange-50); color:var(--orange-600)}
+  .st-gotovo{background:#e6f1ea; color:var(--green-500)}
+  /* ročište poseban naglasak */
+  .t-hear{display:inline-flex; align-items:center; gap:5px; font-weight:600; color:var(--ink-soft); width:100%; margin-top:2px}
+  .kind-rociste{}
 
-  .empty{text-align:center; padding:60px 20px; color:var(--muted)}
-  .empty .big{font-size:40px; margin-bottom:12px}
-  .empty b{display:block; color:var(--ink); margin-bottom:4px; font-size:16px}
+  .empty{text-align:center; padding:64px 20px; color:var(--muted)}
+  .empty .big{font-size:44px; margin-bottom:14px; opacity:.85}
+  .empty b{display:block; font-family:var(--serif); color:var(--ink); margin-bottom:6px; font-size:19px; font-weight:600}
 
   /* FAB */
   .fab{
     position:fixed; right:18px; bottom:18px; z-index:40;
-    background:var(--indigo); color:#fff; border:none; border-radius:999px;
-    padding:14px 20px; font-size:15px; font-weight:700; cursor:pointer;
-    box-shadow:0 6px 20px rgba(26,35,126,.4); display:inline-flex; align-items:center; gap:8px;
+    background:linear-gradient(150deg,var(--orange),var(--orange-600)); color:#13452f;
+    border:none; border-radius:999px; padding:14px 22px; font-size:15px; font-weight:800;
+    font-family:var(--ui); cursor:pointer; letter-spacing:.005em;
+    box-shadow:0 8px 24px rgba(247,147,26,.42), inset 0 1px 0 rgba(255,255,255,.3);
+    display:inline-flex; align-items:center; gap:8px; transition:.18s;
   }
-  .fab:hover{background:var(--indigo-600)}
+  .fab:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(247,147,26,.5)}
+  .fab:active{transform:scale(.97)}
 
   /* MODAL */
   .overlay{
-    position:fixed; inset:0; background:rgba(16,18,46,.5); z-index:100;
-    display:none; align-items:flex-end; justify-content:center; padding:0;
+    position:fixed; inset:0; background:rgba(12,40,28,.46); backdrop-filter:blur(3px);
+    z-index:100; display:none; align-items:flex-end; justify-content:center; padding:0;
   }
   .overlay.open{display:flex}
   .modal{
-    background:#fff; border-radius:20px 20px 0 0; width:100%; max-width:560px;
-    max-height:92vh; overflow-y:auto; box-shadow:var(--shadow-lg); animation:slideUp .25s ease;
+    background:var(--card); border-radius:24px 24px 0 0; width:100%; max-width:560px;
+    max-height:92vh; overflow-y:auto; box-shadow:var(--shadow-lg); animation:slideUp .28s cubic-bezier(.2,.8,.3,1);
+    border-top:3px solid var(--orange);
   }
-  @keyframes slideUp{from{transform:translateY(40px);opacity:.6}to{transform:translateY(0);opacity:1}}
-  .modal-h{position:sticky; top:0; background:#fff; padding:18px 20px 14px; border-bottom:1px solid var(--line);
+  @keyframes slideUp{from{transform:translateY(50px);opacity:.4}to{transform:translateY(0);opacity:1}}
+  .modal-h{position:sticky; top:0; background:var(--card); padding:20px 22px 16px; border-bottom:1px solid var(--line);
     display:flex; align-items:center; justify-content:space-between; z-index:2}
-  .modal-h b{font-size:17px; letter-spacing:-.02em}
-  .x{border:none; background:#f0f1f6; width:30px; height:30px; border-radius:8px; cursor:pointer; font-size:16px; color:var(--muted)}
-  .modal-body{padding:18px 20px 24px}
+  .modal-h b{font-family:var(--serif); font-size:20px; font-weight:600; letter-spacing:.005em}
+  .x{border:none; background:var(--bg-2); width:32px; height:32px; border-radius:10px; cursor:pointer; font-size:15px; color:var(--muted); transition:.15s}
+  .x:hover{background:var(--red-50); color:var(--red)}
+  .modal-body{padding:20px 22px 24px}
   .field{margin-bottom:16px}
-  .field label{display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--ink)}
-  .field .hint{font-size:11px; color:var(--muted); font-weight:500; margin-left:6px}
+  .field label{display:block; font-size:12px; font-weight:700; margin-bottom:7px; color:var(--ink-soft); letter-spacing:.02em}
+  .field .hint{font-size:11px; color:var(--muted); font-weight:500; margin-left:6px; font-style:italic}
   .field input,.field select,.field textarea{
-    width:100%; border:1.5px solid var(--line); border-radius:10px; padding:11px 12px;
-    font-size:15px; font-family:inherit; color:var(--ink); background:#fff; transition:.15s;
+    width:100%; border:1.5px solid var(--line); border-radius:12px; padding:12px 13px;
+    font-size:15px; font-family:var(--ui); color:var(--ink); background:#fff; transition:.18s;
   }
   .field input:focus,.field select:focus,.field textarea:focus{
-    outline:none; border-color:var(--indigo); box-shadow:0 0 0 3px var(--indigo-50);
+    outline:none; border-color:var(--green-500); box-shadow:0 0 0 3px rgba(46,139,99,.16);
   }
-  .field textarea{resize:vertical; min-height:64px}
+  .field textarea{resize:vertical; min-height:66px; line-height:1.5}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-  .modal-foot{display:flex; gap:10px; padding:16px 20px; border-top:1px solid var(--line);
-    position:sticky; bottom:0; background:#fff}
-  .modal-foot .btn{flex:1; justify-content:center; padding:12px}
-  .btn-danger{background:var(--red-50); color:var(--red); border:none}
-  .btn-danger:hover{background:#f9d6d3}
+  .modal-foot{display:flex; gap:10px; padding:16px 22px; border-top:1px solid var(--line);
+    position:sticky; bottom:0; background:var(--card)}
+  .modal-foot .btn{flex:1; justify-content:center; padding:13px}
+  .btn-danger{background:var(--red-50); color:var(--red); border:1px solid #f0cdc9}
+  .btn-danger:hover{background:#f7dcd9}
+
+  /* kind segment (📄 Rok / ⚖️ Ročište) — elegantni inline toggle */
+  #kindSeg{margin-bottom:18px}
+  #kindSeg.seg button{padding:9px 16px}
 
   /* import toast */
-  .toast{position:fixed; top:70px; left:50%; transform:translateX(-50%); z-index:200;
-    background:var(--green); color:#fff; padding:12px 20px; border-radius:12px; font-size:14px;
-    font-weight:600; box-shadow:var(--shadow-lg); display:none; max-width:90%}
+  .toast{position:fixed; top:80px; left:50%; transform:translateX(-50%); z-index:200;
+    background:var(--green); color:#fff; padding:13px 22px; border-radius:14px; font-size:14px;
+    font-weight:600; box-shadow:var(--shadow-lg); display:none; max-width:90%; border:1px solid rgba(255,255,255,.15)}
   .toast.show{display:block; animation:slideUp .25s}
   .toast.err{background:var(--red)}
 
   /* pending badge na segmentu */
-  .pend-badge{background:var(--red); color:#fff; border-radius:999px; padding:0 6px; font-size:10px; margin-left:4px; font-weight:800}
+  .pend-badge{background:var(--orange); color:#13452f; border-radius:999px; padding:0 7px; font-size:10px; margin-left:5px; font-weight:800}
 
   /* approval na kartici */
-  .t-pending{border-left-color:#9c27b0!important; background:linear-gradient(0deg,#fbf5fe,#fff)}
+  .t-pending::before{background:var(--orange)!important}
+  .t-pending{background:linear-gradient(180deg, #fffaf2, var(--card))}
   .pend-tag{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700;
-    color:#7b1fa2; background:#f3e5f5; padding:3px 9px; border-radius:999px}
-  .approve-bar{display:flex; gap:8px; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line)}
-  .btn-approve{flex:1; background:var(--green); color:#fff; border:none; border-radius:9px; padding:9px;
-    font-size:13px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px}
-  .btn-approve:hover{background:#256628}
-  .btn-approve:disabled{background:#cfd4dd; color:#8a909c; cursor:not-allowed}
-  .approve-note{font-size:11px; color:var(--muted); text-align:center; padding:6px; font-style:italic}
+    color:var(--orange-600); background:var(--orange-50); padding:4px 10px; border-radius:999px; border:1px solid #f6dcb4}
+  .approve-bar{display:flex; gap:8px; margin-top:11px; padding-top:11px; border-top:1px dashed var(--line)}
+  .btn-approve{flex:1; background:var(--green); color:#fff; border:none; border-radius:999px; padding:10px;
+    font-size:13px; font-weight:700; font-family:var(--ui); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; transition:.18s}
+  .btn-approve:hover{background:var(--green-700)}
+  .btn-approve:active{transform:scale(.98)}
+  .btn-approve:disabled{background:#cfd6cf; color:#8a948c; cursor:not-allowed}
+  .approve-note{font-size:11px; color:var(--muted); text-align:center; padding:7px; font-style:italic}
 
   /* KALENDAR */
-  .cal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:10px}
+  .cal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; gap:10px}
   .cal-nav{display:flex; gap:6px; align-items:center}
-  .cal-nav button{border:1px solid var(--line); background:#fff; width:34px; height:34px; border-radius:9px;
-    cursor:pointer; font-size:16px; color:var(--indigo); font-weight:700}
-  .cal-nav button:hover{background:var(--indigo-50)}
-  .cal-range{font-size:14px; font-weight:700; color:var(--ink)}
-  .cal-grid{display:grid; grid-template-columns:1fr; gap:8px}
-  .cal-day{background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden}
-  .cal-day.today{border-color:var(--indigo); box-shadow:0 0 0 2px var(--indigo-50)}
-  .cal-day.weekend .cal-day-h{background:#fafbff}
-  .cal-day-h{display:flex; align-items:center; justify-content:space-between; padding:9px 12px;
-    background:#f7f8fc; border-bottom:1px solid var(--line)}
-  .cal-day-h .dname{font-size:13px; font-weight:700}
+  .cal-nav button{border:1px solid var(--line); background:var(--card); width:36px; height:36px; border-radius:10px;
+    cursor:pointer; font-size:16px; color:var(--green); font-weight:700; transition:.15s; box-shadow:var(--shadow)}
+  .cal-nav button:hover{background:var(--green-tint); border-color:var(--green-500)}
+  .cal-range{font-family:var(--serif); font-size:16px; font-weight:600; color:var(--ink)}
+  .cal-grid{display:grid; grid-template-columns:1fr; gap:9px}
+  .cal-day{background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; box-shadow:var(--shadow)}
+  .cal-day.today{border-color:var(--orange); box-shadow:0 0 0 2px rgba(247,147,26,.18)}
+  .cal-day.weekend .cal-day-h{background:var(--bg-2)}
+  .cal-day-h{display:flex; align-items:center; justify-content:space-between; padding:10px 13px;
+    background:var(--green-tint-2); border-bottom:1px solid var(--line)}
+  .cal-day-h .dname{font-size:13px; font-weight:700; color:var(--ink)}
   .cal-day-h .dname small{font-weight:500; color:var(--muted); margin-left:6px}
-  .cal-day-h.today-h .dname{color:var(--indigo)}
-  .cal-day-h .dcount{font-size:11px; color:var(--muted); font-weight:600}
+  .cal-day-h.today-h{background:var(--green)}
+  .cal-day-h.today-h .dname,.cal-day-h.today-h .dname small{color:#fff}
+  .cal-day-h.today-h .dcount{color:var(--orange)}
+  .cal-day-h .dcount{font-size:11px; color:var(--muted); font-weight:700}
   .cal-items{padding:8px}
-  .cal-empty{padding:10px 12px; font-size:12px; color:#b0b6c3; font-style:italic}
-  .cal-item{display:flex; align-items:center; gap:8px; padding:8px; border-radius:8px; cursor:pointer; transition:.12s}
-  .cal-item:hover{background:var(--indigo-50)}
-  .cal-item .ci-dot{width:8px; height:8px; border-radius:50%; flex-shrink:0}
-  .ci-over{background:var(--red)} .ci-soon{background:var(--orange)} .ci-ok{background:var(--green)} .ci-pend{background:#9c27b0}
+  .cal-empty{padding:10px 13px; font-size:12px; color:#b6bcb3; font-style:italic}
+  .cal-item{display:flex; align-items:center; gap:9px; padding:9px; border-radius:10px; cursor:pointer; transition:.14s}
+  .cal-item:hover{background:var(--green-tint)}
+  .cal-item .ci-dot{width:9px; height:9px; border-radius:50%; flex-shrink:0}
+  .ci-over{background:var(--red)} .ci-soon{background:var(--orange)} .ci-ok{background:var(--green-500)} .ci-pend{background:var(--orange)}
+  .ci-rociste{box-shadow:0 0 0 3px rgba(247,147,26,.2)}
   .cal-item .ci-body{flex:1; min-width:0}
-  .cal-item .ci-type{font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .cal-item .ci-type{font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink)}
   .cal-item .ci-sub{font-size:11px; color:var(--muted)}
-  .cal-item .ci-num{font-size:11px; font-weight:700; color:var(--indigo)}
+  .cal-item .ci-num{font-size:11px; font-weight:700; color:var(--green-600)}
   @media(min-width:760px){
-    .cal-grid{grid-template-columns:repeat(7,1fr); gap:6px}
-    .cal-day-h{flex-direction:column; align-items:flex-start; gap:2px; min-height:48px}
-    .cal-item{flex-direction:column; align-items:flex-start; gap:4px; padding:6px}
+    .cal-grid{grid-template-columns:repeat(7,1fr); gap:7px}
+    .cal-day-h{flex-direction:column; align-items:flex-start; gap:2px; min-height:50px}
+    .cal-item{flex-direction:column; align-items:flex-start; gap:4px; padding:7px}
     .cal-item .ci-type{font-size:11px; white-space:normal}
   }
 
   /* desktop tweaks */
   @media(min-width:720px){
     .overlay{align-items:center; padding:24px}
-    .modal{border-radius:20px}
-    .fab{padding:14px 22px}
+    .modal{border-radius:22px; border-top:none; border:1px solid var(--line); border-top:3px solid var(--orange)}
+    .fab{padding:15px 24px}
   }
   @media(max-width:480px){
     .stats{grid-template-columns:repeat(2,1fr)}
-    .brand b{font-size:15px}
-    .toolbar .seg{width:100%}
-    .seg button{flex:1 1 auto; padding:7px 6px; text-align:center}
+    .brand-txt b{font-size:19px}
   }
   @media(prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
 </style>
@@ -284,6 +375,7 @@
 <!-- ============ LOGIN ============ -->
 <div class="login" id="loginScreen">
   <div class="login-card">
+    <div class="login-badge" aria-hidden="true">⚖️</div>
     <h1>The Office</h1>
     <div class="tagline">nismo povezani ??</div>
     <div class="sub">Kancelarija Mišić · zadaci i rokovi</div>
@@ -295,13 +387,16 @@
 <!-- ============ APP ============ -->
 <div class="app" id="appScreen">
   <header>
-    <div class="brand">
-      <span class="brand-txt"><b>The Office</b><span>Kancelarija Mišić</span><span class="hdr-dt"><span class="hdr-date" id="hdrDate"></span><span class="hdr-clock mono" id="hdrClock"></span></span></span>
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-badge" aria-hidden="true">⚖️</span>
+        <span class="brand-txt"><b>The Office</b><span>Kancelarija Mišić</span><span class="hdr-dt"><span class="hdr-date" id="hdrDate"></span><span class="hdr-clock mono" id="hdrClock"></span></span></span>
+      </div>
+      <button class="user-chip" id="userChip" onclick="changeUser()">
+        <span class="avatar" id="userAvatar">M</span>
+        <span id="userName">Milan</span>
+      </button>
     </div>
-    <button class="user-chip" id="userChip" onclick="changeUser()">
-      <span class="avatar" id="userAvatar">M</span>
-      <span id="userName">Milan</span>
-    </button>
   </header>
 
   <main>
@@ -312,6 +407,7 @@
         <button class="on" data-view="moji">Moji</button>
         <button data-view="svi">Svi</button>
         <button data-view="kalendar">📅 7 dana</button>
+        <button data-view="rocista">⚖️ Ročišta</button>
         <button data-view="osobe">Po osobi</button>
         <button data-view="odob">⏳ Odobrenje <span id="pendBadge" class="pend-badge" style="display:none">0</span></button>
       </div>
@@ -339,18 +435,31 @@
       <button class="x" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
+      <div class="seg" id="kindSeg">
+        <button type="button" class="on" data-kind="rok" onclick="setKind('rok')">📄 Rok</button>
+        <button type="button" data-kind="rociste" onclick="setKind('rociste')">⚖️ Ročište</button>
+      </div>
       <div class="field">
         <label>Broj predmeta <span class="hint">ukucaj ili izaberi iz uvezenih</span></label>
         <input id="fNum" list="predmetiList" placeholder="npr. Kž 3-3/26" autocomplete="off">
         <datalist id="predmetiList"></datalist>
       </div>
       <div class="field">
-        <label>Tip zadatka</label>
+        <label id="typeLbl">Tip zadatka</label>
         <select id="fType" onchange="toggleOther()"></select>
       </div>
       <div class="field" id="otherWrap" style="display:none">
         <label>Opiši zadatak <span class="hint">pošto je "Ostalo"</span></label>
         <input id="fOther" placeholder="npr. Sastaviti opomenu pred utuženje">
+      </div>
+      <div class="field" id="courtWrap" style="display:none">
+        <label>🏛️ Sud <span class="hint">naziv suda</span></label>
+        <input id="fCourt" list="courtList" placeholder="npr. Viši sud u Beogradu" autocomplete="off">
+        <datalist id="courtList"></datalist>
+      </div>
+      <div class="field" id="roomWrap" style="display:none">
+        <label>🚪 Sala / kancelarija <span class="hint">opciono</span></label>
+        <input id="fRoom" placeholder="npr. Sala 4">
       </div>
       <div class="row2">
         <div class="field">
@@ -358,7 +467,7 @@
           <select id="fWho"></select>
         </div>
         <div class="field">
-          <label>Rok <span class="hint">datum</span></label>
+          <label id="dateLbl">Rok <span class="hint">datum</span></label>
           <input type="date" id="fDate">
         </div>
       </div>
@@ -417,32 +526,38 @@ const TYPES = [
 ];
 function typeClass(t){ const x=TYPES.find(y=>y.v===t); return x?x.c:'b-other'; }
 
+// tipovi ročišta (kada je kind === 'rociste')
+const HEARING_TYPES = ['Ročište','Glavni pretres','Pripremno ročište','Ročište za glavnu raspravu','Izvođenje dokaza','Objava presude','Ostalo'];
+
 // ===================== STORAGE =====================
 const store={
   _mem:{},
   get(k){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return this._mem[k]||null; } },
   set(k,val){ try{ localStorage.setItem(k,JSON.stringify(val)); }catch(e){ this._mem[k]=val; } }
 };
-const K_TASKS='km-zadaci-v1', K_PRED='km-predmeti-v1', K_USER='km-user-v1';
+const K_TASKS='km-zadaci-v1', K_PRED='km-predmeti-v1', K_USER='km-user-v1', K_SUD='km-sudovi-v1';
 
 let tasks = store.get(K_TASKS) || seedTasks();
 let predmeti = store.get(K_PRED) || ['Kž 3-3/26','P 412/2025','I 88/2024'];
+let sudovi = store.get(K_SUD) || ['Viši sud u Beogradu','Privredni sud u Beogradu','Osnovni sud u Novom Sadu','Apelacioni sud u Beogradu'];
 let currentUser = store.get(K_USER) || null;
 let editingId = null;
 let currentView = 'moji';
+let currentKind = 'rok';
 
 function seedTasks(){
   const today=new Date(); const d=(n)=>{const x=new Date(today);x.setDate(x.getDate()+n);return x.toISOString().slice(0,10);};
   return [
-    {id:uid(), num:'Kž 3-3/26', type:'Zahtev za zaštitu zakonitosti', who:'milan', date:d(2), time:'', status:'u-toku', note:'Hitno — dostaviti spis Vrhovnom sudu', approved:true, approvedBy:'milan', created:Date.now()},
-    {id:uid(), num:'P 412/2025', type:'Odgovor na tužbu', who:'aleksa', date:d(6), time:'', status:'otvoreno', note:'', approved:true, approvedBy:'milan', created:Date.now()-1000},
-    {id:uid(), num:'I 88/2024', type:'Predlog za izvršenje', who:'dunja', date:d(-1), time:'', status:'otvoreno', note:'Rok je prošao — proveriti', approved:true, approvedBy:'milan', created:Date.now()-2000},
-    {id:uid(), num:'P 412/2025', type:'Zvati za plaćanje', who:'sofija', date:d(0), time:'10:00', status:'otvoreno', note:'Klijent kasni sa avansom', approved:true, approvedBy:'sofija', created:Date.now()-3000},
-    {id:uid(), num:'Kž 1-303/25', type:'Žalba', who:'djordje', date:d(4), time:'', status:'otvoreno', note:'Uneo Đorđe — čeka odobrenje', approved:false, approvedBy:null, created:Date.now()-500},
+    {id:uid(), num:'Kž 3-3/26', type:'Zahtev za zaštitu zakonitosti', kind:'rok', court:'', room:'', who:'milan', date:d(2), time:'', status:'u-toku', note:'Hitno — dostaviti spis Vrhovnom sudu', approved:true, approvedBy:'milan', created:Date.now()},
+    {id:uid(), num:'P 412/2025', type:'Odgovor na tužbu', kind:'rok', court:'', room:'', who:'aleksa', date:d(6), time:'', status:'otvoreno', note:'', approved:true, approvedBy:'milan', created:Date.now()-1000},
+    {id:uid(), num:'I 88/2024', type:'Predlog za izvršenje', kind:'rok', court:'', room:'', who:'dunja', date:d(-1), time:'', status:'otvoreno', note:'Rok je prošao — proveriti', approved:true, approvedBy:'milan', created:Date.now()-2000},
+    {id:uid(), num:'P 412/2025', type:'Glavni pretres', kind:'rociste', court:'Viši sud u Beogradu', room:'Sala 4', who:'milan', date:d(3), time:'09:30', status:'otvoreno', note:'Poneti originale punomoćja', approved:true, approvedBy:'milan', created:Date.now()-2500},
+    {id:uid(), num:'P 412/2025', type:'Zvati za plaćanje', kind:'rok', court:'', room:'', who:'sofija', date:d(0), time:'10:00', status:'otvoreno', note:'Klijent kasni sa avansom', approved:true, approvedBy:'sofija', created:Date.now()-3000},
+    {id:uid(), num:'Kž 1-303/25', type:'Žalba', kind:'rok', court:'', room:'', who:'djordje', date:d(4), time:'', status:'otvoreno', note:'Uneo Đorđe — čeka odobrenje', approved:false, approvedBy:null, created:Date.now()-500},
   ];
 }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function save(){ store.set(K_TASKS,tasks); store.set(K_PRED,predmeti); }
+function save(){ store.set(K_TASKS,tasks); store.set(K_PRED,predmeti); store.set(K_SUD,sudovi); }
 
 // ===================== INIT =====================
 function init(){
@@ -458,8 +573,9 @@ function init(){
   document.getElementById('fType').innerHTML = TYPES.map(t=>`<option value="${t.v}">${t.v}</option>`).join('');
   // who select
   document.getElementById('fWho').innerHTML = TEAM.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-  // predmeti datalist
+  // predmeti + sudovi datalist
   refreshPredmetiList();
+  refreshSudoviList();
 
   // view segmenti
   document.querySelectorAll('#viewSeg button').forEach(b=>{
@@ -474,7 +590,10 @@ function init(){
 }
 
 function refreshPredmetiList(){
-  document.getElementById('predmetiList').innerHTML = predmeti.map(p=>`<option value="${p}">`).join('');
+  document.getElementById('predmetiList').innerHTML = predmeti.map(p=>`<option value="${esc(p)}">`).join('');
+}
+function refreshSudoviList(){
+  document.getElementById('courtList').innerHTML = sudovi.map(s=>`<option value="${esc(s)}">`).join('');
 }
 
 // ===================== LOGIN =====================
@@ -585,11 +704,14 @@ function renderCalendar(){
         const who=TEAM.find(p=>p.id===t.who)||{name:'?'};
         const r=rokInfo(t.date);
         const dot = !t.approved ? 'ci-pend' : (t.status==='gotovo'?'ci-ok':r.cls==='over'?'ci-over':r.cls==='soon'?'ci-soon':'ci-ok');
+        const isH = t.kind==='rociste';
+        const rocCls = isH ? ' ci-rociste' : '';
+        const label = isH ? '⚖️ '+shortType(t.type) : shortType(t.type);
         return `<div class="cal-item" onclick="openEdit('${t.id}')">
-          <span class="ci-dot ${dot}"></span>
+          <span class="ci-dot ${dot}${rocCls}"></span>
           <div class="ci-body">
-            <div class="ci-type">${esc(shortType(t.type))}</div>
-            <div class="ci-sub">${t.time?'🕑 '+t.time+' · ':''}${who.name.split(' ')[0]}${t.num?' · <span class="ci-num">'+esc(t.num)+'</span>':''}${!t.approved?' · ⏳':''}</div>
+            <div class="ci-type">${esc(label)}</div>
+            <div class="ci-sub">${t.time?'🕑 '+t.time+' · ':''}${who.name.split(' ')[0]}${t.num?' · <span class="ci-num">'+esc(t.num)+'</span>':''}${isH&&t.court?' · 🏛️ '+esc(t.court):''}${!t.approved?' · ⏳':''}</div>
           </div>
         </div>`;
       }).join('');
@@ -612,6 +734,7 @@ function render(){
 
   if(currentView==='moji') arr=arr.filter(t=>t.who===currentUser);
   else if(currentView==='odob') arr=arr.filter(t=>!t.approved);
+  else if(currentView==='rocista') arr=arr.filter(t=>t.kind==='rociste');
 
   const sort=document.getElementById('sortSel').value;
   if(sort==='rok') arr.sort((a,b)=>(rokInfo(a.date).days)-(rokInfo(b.date).days));
@@ -621,8 +744,10 @@ function render(){
   if(arr.length===0){
     const msg = currentView==='odob' ? 'Nema zadataka na čekanju — sve je odobreno ✓'
       : currentView==='moji' ? 'Nemaš dodeljenih zadataka.'
+      : currentView==='rocista' ? 'Nema zakazanih ročišta.'
       : 'Dodaj prvi zadatak dugmetom dole.';
-    list.innerHTML=`<div class="empty"><div class="big">${currentView==='odob'?'✅':'📋'}</div><b>Nema zadataka</b>${msg}</div>`;
+    const ico = currentView==='odob' ? '✅' : currentView==='rocista' ? '⚖️' : '📋';
+    list.innerHTML=`<div class="empty"><div class="big">${ico}</div><b>Nema zadataka</b>${msg}</div>`;
     return;
   }
 
@@ -673,18 +798,36 @@ function taskCard(t){
     }
   }
 
-  return `<div class="task ${dueClass} ${pendingCls}" onclick="openEdit('${t.id}')">
+  const isHearing = t.kind==='rociste';
+  const kindCls = isHearing ? 'kind-rociste' : '';
+  const badge = !t.approved
+    ? '<span class="pend-tag">⏳ Čeka</span>'
+    : (isHearing
+        ? '<span class="t-badge b-poziv">⚖️ Ročište</span>'
+        : `<span class="t-badge ${typeClass(t.type)}">${esc(shortType(t.type))}</span>`);
+  // ročište: 🏛️ Sud · 🚪 Sala · 🕑 vreme
+  let hearHtml='';
+  if(isHearing && (t.court||t.room||t.time)){
+    const bits=[];
+    if(t.court) bits.push('🏛️ '+esc(t.court));
+    if(t.room)  bits.push('🚪 '+esc(t.room));
+    if(t.time)  bits.push('🕑 '+esc(t.time));
+    hearHtml=`<span class="t-hear">${bits.join(' · ')}</span>`;
+  }
+
+  return `<div class="task ${dueClass} ${pendingCls} ${kindCls}" onclick="openEdit('${t.id}')">
     <div class="t-top">
       <div>
         <div class="t-title">${esc(t.type)}</div>
         <div class="t-num mono">${esc(t.num||'—')}</div>
       </div>
-      ${!t.approved?'<span class="pend-tag">⏳ Čeka</span>':`<span class="t-badge ${typeClass(t.type)}">${esc(shortType(t.type))}</span>`}
+      ${badge}
     </div>
     <div class="t-meta">
       <span class="t-rok ${r.cls}">🕑 ${r.txt}${t.date?' · '+fmtDate(t.date)+timeStr:''}</span>
       <span class="t-who"><span class="avatar">${who.av}</span>${who.name.split(' ')[0]}</span>
       <span class="t-status ${stClass}">${stTxt}</span>
+      ${hearHtml}
     </div>
     ${t.note?`<div class="t-note">${esc(t.note)}</div>`:''}
     ${approveHtml}
@@ -694,12 +837,34 @@ function shortType(t){ return t.length>22?t.slice(0,20)+'…':t; }
 function esc(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 // ===================== MODAL =====================
+// puni #fType u zavisnosti od vrste (rok = TYPES, rociste = HEARING_TYPES)
+function populateTypeSelect(selected){
+  const sel=document.getElementById('fType');
+  const opts = currentKind==='rociste' ? HEARING_TYPES : TYPES.map(t=>t.v);
+  sel.innerHTML = opts.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  if(selected && opts.includes(selected)) sel.value=selected;
+}
+// promena Rok / Ročište — usklađuje vidljiva polja i labele
+function setKind(kind){
+  currentKind = kind==='rociste' ? 'rociste' : 'rok';
+  document.querySelectorAll('#kindSeg button').forEach(b=>b.classList.toggle('on', b.dataset.kind===currentKind));
+  const isH = currentKind==='rociste';
+  document.getElementById('typeLbl').textContent = isH ? 'Tip ročišta' : 'Tip zadatka';
+  document.getElementById('dateLbl').innerHTML = isH ? 'Datum <span class="hint">ročišta</span>' : 'Rok <span class="hint">datum</span>';
+  document.getElementById('courtWrap').style.display = isH ? 'block' : 'none';
+  document.getElementById('roomWrap').style.display  = isH ? 'block' : 'none';
+  populateTypeSelect(document.getElementById('fType').value);
+  toggleOther();
+}
 function openNew(){
   editingId=null;
   document.getElementById('modalTitle').textContent='Novi zadatak';
+  setKind('rok');
   document.getElementById('fNum').value='';
   document.getElementById('fType').value=TYPES[0].v;
   document.getElementById('fOther').value='';
+  document.getElementById('fCourt').value='';
+  document.getElementById('fRoom').value='';
   document.getElementById('fWho').value=currentUser;
   document.getElementById('fDate').value='';
   document.getElementById('fTime').value='';
@@ -713,11 +878,15 @@ function openEdit(id){
   const t=tasks.find(x=>x.id===id); if(!t)return;
   editingId=id;
   document.getElementById('modalTitle').textContent='Izmeni zadatak';
+  setKind(t.kind==='rociste'?'rociste':'rok');
   // ako je tip custom (Ostalo), prikaži ga
-  const known=TYPES.find(y=>y.v===t.type);
+  const pool = currentKind==='rociste' ? HEARING_TYPES : TYPES.map(y=>y.v);
+  const known = pool.includes(t.type);
   if(known){ document.getElementById('fType').value=t.type; document.getElementById('fOther').value=''; }
   else { document.getElementById('fType').value='Ostalo'; document.getElementById('fOther').value=t.type; }
   document.getElementById('fNum').value=t.num||'';
+  document.getElementById('fCourt').value=t.court||'';
+  document.getElementById('fRoom').value=t.room||'';
   document.getElementById('fWho').value=t.who;
   document.getElementById('fDate').value=t.date||'';
   document.getElementById('fTime').value=t.time||'';
@@ -737,8 +906,11 @@ function saveTask(){
   const other=document.getElementById('fOther').value.trim();
   const finalType = typeSel==='Ostalo' ? (other||'Ostalo') : typeSel;
   const num=document.getElementById('fNum').value.trim();
+  const isH = currentKind==='rociste';
+  const court = isH ? document.getElementById('fCourt').value.trim() : '';
+  const room  = isH ? document.getElementById('fRoom').value.trim()  : '';
   const obj={
-    num, type:finalType,
+    num, type:finalType, kind:currentKind, court, room,
     who:document.getElementById('fWho').value,
     date:document.getElementById('fDate').value,
     time:document.getElementById('fTime').value,
@@ -757,6 +929,8 @@ function saveTask(){
   }
   // dodaj broj u predmete ako je nov
   if(num && !predmeti.includes(num)){ predmeti.push(num); refreshPredmetiList(); }
+  // dodaj sud u listu sudova ako je nov
+  if(court && !sudovi.includes(court)){ sudovi.push(court); refreshSudoviList(); }
   save(); closeModal(); render();
   let msg = editingId ? 'Zadatak izmenjen ✓' : (obj.approved ? 'Zadatak dodat i odobren ✓' : 'Zadatak dodat — čeka odobrenje ⏳');
   showToast(msg);
